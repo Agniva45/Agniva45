@@ -1,0 +1,81 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPBbl6RD3yPv1Y/574+OVkv",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/agniva13/Agniva45/blob/main/Weapon%20Detector%20using%20OpenCV\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import numpy as np\n",
+        "import cv2\n",
+        "import imutils\n",
+        "import datetime\n",
+        "import matplotlib.pyplot as plt\n",
+        "gun_cascade = cv2.CascadeClassifier('cascade.xml')\n",
+        "camera = cv2.VideoCapture(0)\n",
+        "firstFrame = None\n",
+        "gun_exist = False\n",
+        "while True:\n",
+        "\tret, frame = camera.read()\n",
+        "\tif frame is None:\n",
+        "\t\tbreak\n",
+        "\tframe = imutils.resize(frame, width=500)\n",
+        "\tgray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)\n",
+        "\tgun = gun_cascade.detectMultiScale(gray, 1.3, 20, minSize=(100, 100))\n",
+        "\tif len(gun) > 0:\n",
+        "\t\tgun_exist = True\n",
+        "\tfor (x, y, w, h) in gun:\n",
+        "\t\tframe = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)\n",
+        "\t\troi_gray = gray[y:y + h, x:x + w]\n",
+        "\t\troi_color = frame[y:y + h, x:x + w]\n",
+        "\tif firstFrame is None:\n",
+        "\t\tfirstFrame = gray\n",
+        "\t\tcontinue\n",
+        "\tcv2.putText(frame, datetime.datetime.now().strftime(\"%A %d %B %Y %I:%M:%S %p\"),\n",
+        "\t\t\t\t(10, frame.shape[0] - 10),\n",
+        "\t\t\t\tcv2.FONT_HERSHEY_SIMPLEX,\n",
+        "\t\t\t\t0.35, (0, 0, 255), 1)\n",
+        "\tif gun_exist:\n",
+        "\t\tprint(\"Guns detected\")\n",
+        "\t\tplt.imshow(frame)\n",
+        "\t\tbreak\n",
+        "\telse:\n",
+        "\t\tcv2.imshow(\"Security Feed\", frame)\n",
+        "\tkey = cv2.waitKey(1) & 0xFF\n",
+        "\tif key == ord('q'):\n",
+        "\t\tbreak\n",
+        "\n",
+        "camera.release()\n",
+        "cv2.destroyAllWindows()\n"
+      ],
+      "metadata": {
+        "id": "594KcgHHZv5e"
+      },
+      "execution_count": 4,
+      "outputs": []
+    }
+  ]
+}
